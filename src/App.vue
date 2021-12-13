@@ -20,7 +20,7 @@
         </button>
       </section>
       <section>
-        <h3>Scroll</h3>
+        <h3>Select Branch</h3>
         <b-form-radio-group v-model="selectedBranch" :options="branches" class="mb-3" value-field="text" text-field="value" disabled-field="notEnabled"></b-form-radio-group>
         <div class="mt-3">Selected: <strong>{{ selectedRepo }}</strong></div>
         <button v-on:click="getAllFiles(username,selectedRepo,selectedBranch)">
@@ -35,7 +35,6 @@
 </template>
 
 <script>
-
 import {getAllRepos, getAllBranches, getAllFiles} from './service/UserService'
 
 export default {
