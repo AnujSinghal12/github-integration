@@ -3,11 +3,16 @@
     <h1>
       Welcome to the Github Integration Portal
     </h1>
+    <div>
+      <a href="https://github.com/login/oauth/authorize?client_id=5f223379fb1a42a8258e&scope=repo">
+        Login with github
+      </a>
+    </div>
     <div class="container">
       <div class="item">
         <h3>Enter Username</h3>
         <input v-model="username" placeholder="username"/>
-        <button v-on:click="getAllRepos({username})">
+        <button v-on:click="getAllRepos()">
           Get All Repositories
         </button>
       </div>
@@ -35,6 +40,7 @@
 </template>
 
 <script>
+const axios = require('axios');
 import {getAllRepos, getAllBranches, getAllFiles} from './service/UserService'
 
 export default {
@@ -52,22 +58,22 @@ export default {
       branchesSet:0,
       files : [],
       numberOfFiles : "",
+      access_token: ""
     }
   },
   methods : {
-    getAllRepos(name) {
-      console.log(name)
-      getAllRepos(name).then(response => {
+    getAllRepos() {
+      // console.log(this.access_token)
+      getAllRepos(this.access_token).then(response => {
         this.repos.splice(0, this.repos.length)
         for(let i=0;i<response.length;i++) {
           this.repos.push({text :response[i].name, value: response[i].name});
         }
         console.log(this.repos)
-        console.log(this.repos.repos)
       })
     },
     getAllBranches(name,repo) {
-      getAllBranches(name,repo).then(response => {
+      getAllBranches(name,repo,this.access_token).then(response => {
         this.branches.splice(0, this.branches.length)
         for(let i=0;i<response.length;i++) {
           this.branches.push({text : response[i].name, value : response[i].name});
@@ -76,20 +82,44 @@ export default {
       })
     },
     getAllFiles(name,repo,branch) {
-      getAllFiles(name,repo,branch).then(response => {
+      getAllFiles(name,repo,branch,this.access_token).then(response => {
         
         this.files.splice(0,this.files.length)
         for(let i=0;i<response.tree.length;i++) {
           if(response.tree[i].path)
           this.files.push(response.tree[i].path);
         }
-        console.log(this.files.length)
         this.numberOfFiles = this.files.length
-        // console.log(this.files)
         console.log(this.numerOfFiles)
       })
     }
-  }
+  },
+  created() {
+    // const accessToken = localStorage.getItem("access_token");
+    // console.log(accessToken)
+    
+    // if(accessToken!==undefined) {
+    //   console.log(accessToken,"thisisyo")
+    //   this.access_token = accessToken;
+    // }
+    // else{
+      const query = window.location.search.substring(1)
+      console.log(query)
+      const request_token = query.split('code=')[1]
+      console.log(request_token)
+      axios({
+        method: 'get',
+      url: `http://localhost:3000/temp?token=${request_token}`,
+      }).then(response => {
+        const accessToken = response.data.accessToken
+        console.log(response.data)
+
+        this.access_token = accessToken;
+
+        //localStorage.setItem("access_token", accessToken);
+      })
+    }
+  // }
 }
 </script>
 

@@ -1,24 +1,33 @@
 import axios from "axios";
-// const axios = require("axios");
 
-export async function getAllRepos(user) {
-  console.log(user.username);
+const returnHeader = (token) => {
+  return {
+    headers: {
+      Authorization: `token ${token}`,
+    },
+  };
+};
+
+export async function getAllRepos(token) {
   const response = await axios.get(
-    `https://api.github.com/users/${user.username}/repos`
+    `https://api.github.com/user/repos`,
+    returnHeader(token)
   );
   return response.data;
 }
 
-export async function getAllBranches(user, repo) {
+export async function getAllBranches(user, repo, token) {
   const response = await axios.get(
-    `https://api.github.com/repos/${user}/${repo}/branches`
+    `https://api.github.com/repos/${user}/${repo}/branches`,
+    returnHeader(token)
   );
   return response.data;
 }
 
-export async function getAllFiles(user, repo, branch) {
+export async function getAllFiles(user, repo, branch, token) {
   const response = await axios.get(
-    `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`
+    `https://api.github.com/repos/${user}/${repo}/git/trees/${branch}?recursive=1`,
+    returnHeader(token)
   );
   return response.data;
 }
